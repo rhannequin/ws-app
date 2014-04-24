@@ -52,12 +52,7 @@ module WSApp
     end
 
     not_found do
-      haml :not_found, {
-        locals: {
-          title: "You're lost in outer space...",
-          name: 'not-found'
-        }
-      }
+      json_response 404, { error: 'Not found' }
     end
   end
 
