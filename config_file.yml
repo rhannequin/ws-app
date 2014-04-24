@@ -1,0 +1,9 @@
+production:
+  api_name: 'WSApp'
+  repo_url: 'https://github.com/rhannequin/ws-app'
+development:
+  api_name: 'WSApp'
+  repo_url: 'https://github.com/rhannequin/ws-app'
+test:
+  api_name: 'WSApp'
+  repo_url: 'https://github.com/rhannequin/ws-app'
