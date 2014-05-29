@@ -11,6 +11,8 @@ gem 'rake'
 gem 'unicorn'
 gem 'shotgun'
 
+gem 'savon'
+
 group :development do
   gem 'foreman'
 end

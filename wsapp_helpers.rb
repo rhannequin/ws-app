@@ -50,5 +50,13 @@ module WSApp
       Rack::Utils.escape_html(text)
     end
 
+    def reformat_soap_results(soap_results)
+      soap_results[:item].map! do |arr1|
+        arr1[:item].map do |arr2|
+          { arr2[:key] => arr2[:value] }
+        end.reduce Hash.new, :merge
+      end
+    end
+
   end
 end

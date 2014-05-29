@@ -4,7 +4,7 @@ require 'sinatra/cross_origin'
 require 'sinatra/config_file'
 require 'sinatra/namespace'
 require 'sinatra/reloader'
-
+require 'savon'
 require 'logger'
 require 'json'
 
@@ -29,6 +29,7 @@ module WSApp
     configure do
       enable :logging
       enable :cross_origin
+      set :soap_client, Savon.client(wsdl: 'http://localhost/workspace/github/ws-soap-server/comments.wsdl')
     end
 
     configure :production do
@@ -49,6 +50,13 @@ module WSApp
 
     get '/' do
       json_response 200, { data: { hello: 'world' } }
+    end
+
+    get '/places/:id/comments' do
+      place_id = params[:id].to_i
+      response = settings.soap_client.call(:get_comments_by_parent_id, message: { id: place_id })
+      results = response.body[:get_comments_by_parent_id_response][:return]
+      json_response 200, { data: { results: reformat_soap_results(results) } }
     end
 
     not_found do
