@@ -4,6 +4,7 @@ require 'sinatra/cross_origin'
 require 'sinatra/config_file'
 require 'sinatra/namespace'
 require 'sinatra/reloader'
+require 'xmlsimple'
 require 'savon'
 require 'logger'
 require 'json'
@@ -50,6 +51,14 @@ module WSApp
 
     get '/' do
       json_response 200, { data: { hello: 'world' } }
+    end
+
+    get '/test-xml' do
+      content_type 'text/xml'
+      XmlSimple.xml_out({place: {id: 1}},
+                        'AttrPrefix' => true,
+                        'KeyAttr' => ['name', 'key', 'id'],
+                        'XmlDeclaration' => true)
     end
 
     get '/places/:id/comments' do

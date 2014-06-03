@@ -5,6 +5,8 @@ ws-app
 
 - [Ruby 2.1.1](https://www.ruby-lang.org/fr/downloads)
 
+You'll also need to launch the [SOAP server](https://github.com/2slow/ws-soap-server) as this app get data from web services.
+
 ## Install
 
 ```

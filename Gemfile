@@ -11,6 +11,7 @@ gem 'rake'
 gem 'unicorn'
 gem 'shotgun'
 
+gem 'xml-simple'
 gem 'savon'
 
 group :development do
