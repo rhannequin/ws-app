@@ -53,12 +53,33 @@ module WSApp
       json_response 200, { data: { hello: 'world' } }
     end
 
-    get '/test-xml' do
-      content_type 'text/xml'
-      XmlSimple.xml_out({place: {id: 1}},
-                        'AttrPrefix' => true,
-                        'KeyAttr' => ['name', 'key', 'id'],
-                        'XmlDeclaration' => true)
+
+    # Places
+
+    get '/places' do
+      json_response 200, { data: [
+        {
+          id: 1,
+          name: 'ESGI',
+          address: '21 rue Erard',
+          description: 'École Supérieure de Génie en Informatique',
+          latitude: 48.846133,
+          longitude: 2.385478,
+          town_id: 1
+        }
+      ]}
+    end
+
+    get '/places/:id' do
+      json_response 200, { data: {
+        id: 1,
+        name: 'ESGI',
+        address: '21 rue Erard',
+        description: 'École Supérieure de Génie en Informatique',
+        latitude: 48.846133,
+        longitude: 2.385478,
+        town_id: 1
+      }}
     end
 
     get '/places/:id/comments' do
@@ -66,6 +87,44 @@ module WSApp
       response = settings.soap_client.call(:get_comments_by_parent_id, message: { id: place_id })
       results = response.body[:get_comments_by_parent_id_response][:return]
       json_response 200, { data: { results: reformat_soap_results(results) } }
+    end
+
+
+    # Towns
+
+    get '/towns' do
+      json_response 200, { data: [
+        {
+          id: 1,
+          name: 'Paris',
+          population: 3000000,
+          country_id: 1
+        }
+      ]}
+    end
+
+
+    # Countries
+
+    get '/countries' do
+      json_response 200, { data: [
+        {
+          id: 1,
+          name: 'France',
+          code: 'Fr',
+          continent: 'Europe'
+        }
+      ]}
+    end
+
+
+
+    get '/test-xml' do
+      content_type 'text/xml'
+      XmlSimple.xml_out({place: {id: 1}},
+                        'AttrPrefix' => true,
+                        'KeyAttr' => ['name', 'key', 'id'],
+                        'XmlDeclaration' => true)
     end
 
     not_found do
