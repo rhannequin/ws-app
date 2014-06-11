@@ -66,6 +66,15 @@ module WSApp
           latitude: 48.846133,
           longitude: 2.385478,
           town_id: 1
+        },
+        {
+          id: 2,
+          name: 'Maison',
+          address: '6 rue Montesquieu',
+          description: "C'est chez moi !",
+          latitude: 48.849268,
+          longitude: 2.482843,
+          town_id: 2,
         }
       ]}
     end
@@ -78,7 +87,17 @@ module WSApp
         description: 'École Supérieure de Génie en Informatique',
         latitude: 48.846133,
         longitude: 2.385478,
-        town_id: 1
+        town: {
+          id: 1,
+          name: 'Paris',
+          population: 3000000,
+          country: {
+            id: 1,
+            name: 'France',
+            code: 'Fr',
+            continent: 'Europe'
+          }
+        }
       }}
     end
 
@@ -99,8 +118,28 @@ module WSApp
           name: 'Paris',
           population: 3000000,
           country_id: 1
+        },
+        {
+          id: 2,
+          name: 'Fontenay-sous-Bois',
+          population: 50000,
+          country_id: 1
         }
       ]}
+    end
+
+    get '/towns/:id' do
+      json_response 200, { data: {
+        id: 1,
+        name: 'Paris',
+        population: 3000000,
+        country: {
+          id: 1,
+          name: 'France',
+          code: 'Fr',
+          continent: 'Europe'
+        }
+      }}
     end
 
 
@@ -115,6 +154,15 @@ module WSApp
           continent: 'Europe'
         }
       ]}
+    end
+
+    get '/countries/:id' do
+      json_response 200, { data: {
+        id: 1,
+        name: 'France',
+        code: 'Fr',
+        continent: 'Europe'
+      }}
     end
 
 
