@@ -33,6 +33,8 @@ GEM
       rack (>= 1.0)
     raindrops (0.13.0)
     rake (10.3.2)
+    rest-client (1.6.7)
+      mime-types (>= 1.16)
     rubyntlm (0.3.4)
     savon (2.5.1)
       akami (~> 1.2.0)
@@ -80,6 +82,7 @@ DEPENDENCIES
   rack-cache
   rack-test
   rake
+  rest-client
   savon
   shotgun
   sinatra

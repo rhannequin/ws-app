@@ -11,6 +11,8 @@ gem 'rake'
 gem 'unicorn'
 gem 'shotgun'
 
+gem 'rest-client'
+
 gem 'xml-simple'
 gem 'savon'
 

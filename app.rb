@@ -4,6 +4,8 @@ require 'sinatra/cross_origin'
 require 'sinatra/config_file'
 require 'sinatra/namespace'
 require 'sinatra/reloader'
+
+require 'rest-client'
 require 'xmlsimple'
 require 'savon'
 require 'logger'
@@ -31,6 +33,7 @@ module WSApp
       enable :logging
       enable :cross_origin
       set :soap_client, Savon.client(wsdl: 'http://localhost/workspace/github/ws-soap-server/comments.wsdl')
+      set :rest_server, 'http://localhost:3000'
     end
 
     configure :production do
@@ -57,26 +60,13 @@ module WSApp
     # Places
 
     get '/places' do
-      json_response 200, { data: [
-        {
-          id: 1,
-          name: 'ESGI',
-          address: '21 rue Erard',
-          description: 'École Supérieure de Génie en Informatique',
-          latitude: 48.846133,
-          longitude: 2.385478,
-          town_id: 1
-        },
-        {
-          id: 2,
-          name: 'Maison',
-          address: '6 rue Montesquieu',
-          description: "C'est chez moi !",
-          latitude: 48.849268,
-          longitude: 2.482843,
-          town_id: 2,
-        }
-      ]}
+      response = RestClient.get "#{settings.rest_server}/places", { accept: :xml }
+      conversions = {
+        /^town_id|id/         => lambda { |v| v.to_i },
+        /^latitude|longitude/ => lambda { |v| v.to_f }
+      }
+      to_xml = XmlSimple.xml_in response.to_str, conversions: conversions, forcearray: false
+      json_response 200, { data: to_xml['places']['place'] }
     end
 
     get '/places/:id' do
@@ -112,20 +102,10 @@ module WSApp
     # Towns
 
     get '/towns' do
-      json_response 200, { data: [
-        {
-          id: 1,
-          name: 'Paris',
-          population: 3000000,
-          country_id: 1
-        },
-        {
-          id: 2,
-          name: 'Fontenay-sous-Bois',
-          population: 50000,
-          country_id: 1
-        }
-      ]}
+      response = RestClient.get "#{settings.rest_server}/towns", { accept: :xml }
+      conversions = { /^country_id|id|population/ => lambda { |v| v.to_i } }
+      to_xml = XmlSimple.xml_in response.to_str, conversions: conversions, forcearray: false
+      json_response 200, { data: to_xml['towns']['town'] }
     end
 
     get '/towns/:id' do
@@ -146,14 +126,10 @@ module WSApp
     # Countries
 
     get '/countries' do
-      json_response 200, { data: [
-        {
-          id: 1,
-          name: 'France',
-          code: 'Fr',
-          continent: 'Europe'
-        }
-      ]}
+      response = RestClient.get "#{settings.rest_server}/countries", { accept: :xml }
+      conversions = { /^id/ => lambda { |v| v.to_i } }
+      to_xml = XmlSimple.xml_in response.to_str, conversions: conversions, forcearray: false
+      json_response 200, { data: to_xml['countries']['country'] }
     end
 
     get '/countries/:id' do
