@@ -60,13 +60,16 @@ module WSApp
     # Places
 
     get '/places' do
-      response = RestClient.get "#{settings.rest_server}/places", { accept: :xml }
+      url = "#{settings.rest_server}/places"
+      response = RestClient.get url, { accept: :xml }
       conversions = {
         /^town_id|id/         => lambda { |v| v.to_i },
         /^latitude|longitude/ => lambda { |v| v.to_f }
       }
       to_xml = XmlSimple.xml_in response.to_str, conversions: conversions, forcearray: false
-      json_response 200, { data: to_xml['places']['place'] }
+      rendered = to_xml['places']['place']
+      rendered = [rendered] unless rendered.kind_of? Array
+      json_response 200, { data: rendered }
     end
 
     get '/places/:id' do
