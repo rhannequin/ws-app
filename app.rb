@@ -61,6 +61,7 @@ module WSApp
 
     get '/places' do
       url = "#{settings.rest_server}/places"
+      url << "?f=#{params['f']}" unless params['f'].nil?
       response = RestClient.get url, { accept: :xml }
       conversions = {
         /^town_id|id/         => lambda { |v| v.to_i },
@@ -73,25 +74,14 @@ module WSApp
     end
 
     get '/places/:id' do
-      json_response 200, { data: {
-        id: 1,
-        name: 'ESGI',
-        address: '21 rue Erard',
-        description: 'École Supérieure de Génie en Informatique',
-        latitude: 48.846133,
-        longitude: 2.385478,
-        town: {
-          id: 1,
-          name: 'Paris',
-          population: 3000000,
-          country: {
-            id: 1,
-            name: 'France',
-            code: 'Fr',
-            continent: 'Europe'
-          }
-        }
-      }}
+      url = "#{settings.rest_server}/places/#{params['id'].to_i}"
+      response = RestClient.get url, { accept: :xml }
+      conversions = {
+        /^town_id|id/         => lambda { |v| v.to_i },
+        /^latitude|longitude/ => lambda { |v| v.to_f }
+      }
+      to_xml = XmlSimple.xml_in response.to_str, conversions: conversions, forcearray: false
+      json_response 200, { data: to_xml['places']['place'] }
     end
 
     get '/places/:id/comments' do
@@ -112,17 +102,11 @@ module WSApp
     end
 
     get '/towns/:id' do
-      json_response 200, { data: {
-        id: 1,
-        name: 'Paris',
-        population: 3000000,
-        country: {
-          id: 1,
-          name: 'France',
-          code: 'Fr',
-          continent: 'Europe'
-        }
-      }}
+      url = "#{settings.rest_server}/towns/#{params['id'].to_i}"
+      response = RestClient.get url, { accept: :xml }
+      conversions = { /^country_id|id|population/ => lambda { |v| v.to_i } }
+      to_xml = XmlSimple.xml_in response.to_str, conversions: conversions, forcearray: false
+      json_response 200, { data: to_xml['towns']['town'] }
     end
 
 
@@ -136,12 +120,11 @@ module WSApp
     end
 
     get '/countries/:id' do
-      json_response 200, { data: {
-        id: 1,
-        name: 'France',
-        code: 'Fr',
-        continent: 'Europe'
-      }}
+      url = "#{settings.rest_server}/countries/#{params['id'].to_i}"
+      response = RestClient.get url, { accept: :xml }
+      conversions = { /^id/ => lambda { |v| v.to_i } }
+      to_xml = XmlSimple.xml_in response.to_str, conversions: conversions, forcearray: false
+      json_response 200, { data: to_xml['countries']['country'] }
     end
 
 
