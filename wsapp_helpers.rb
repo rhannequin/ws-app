@@ -58,5 +58,16 @@ module WSApp
       end
     end
 
+    def to_xml(obj)
+      XmlSimple.xml_out(obj,
+                        'AttrPrefix' => true,
+                        'KeyAttr' => ['name', 'key', 'id'],
+                        'XmlDeclaration' => true)
+    end
+
+    def from_xml(str, conversions = {})
+      XmlSimple.xml_in str, conversions: conversions, forcearray: false
+    end
+
   end
 end

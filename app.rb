@@ -91,6 +91,14 @@ module WSApp
       json_response 200, { data: { results: reformat_soap_results(results) } }
     end
 
+    post '/places' do
+      url = "#{settings.rest_server}/places"
+      response = RestClient.post url, to_xml(params[:place]), content_type: :xml, accept: :xml
+      conversions = { /^placeId/ => lambda { |v| v.to_i } }
+      from_xml = from_xml response.to_str, conversions
+      json_response 201, { data: { place_id: from_xml['placeId'] } }
+    end
+
 
     # Towns
 
