@@ -117,6 +117,14 @@ module WSApp
       json_response 200, { data: to_xml['towns']['town'] }
     end
 
+    post '/towns' do
+      url = "#{settings.rest_server}/towns"
+      response = RestClient.post url, to_xml(params[:town]), content_type: :xml, accept: :xml
+      conversions = { /^townId/ => lambda { |v| v.to_i } }
+      from_xml = from_xml response.to_str, conversions
+      json_response 201, { data: { town_id: from_xml['townId'] } }
+    end
+
 
     # Countries
 
@@ -133,6 +141,14 @@ module WSApp
       conversions = { /^id/ => lambda { |v| v.to_i } }
       to_xml = XmlSimple.xml_in response.to_str, conversions: conversions, forcearray: false
       json_response 200, { data: to_xml['countries']['country'] }
+    end
+
+    post '/countries' do
+      url = "#{settings.rest_server}/countries"
+      response = RestClient.post url, to_xml(params[:country]), content_type: :xml, accept: :xml
+      conversions = { /^countryId/ => lambda { |v| v.to_i } }
+      from_xml = from_xml response.to_str, conversions
+      json_response 201, { data: { country_id: from_xml['countryId'] } }
     end
 
 
