@@ -96,22 +96,25 @@ module WSApp
       place_id = params[:id].to_i
       response = settings.soap_client.call(:get_comments_by_parent_id, message: { idParent: place_id })
       results = response.body[:get_comments_by_parent_id_response][:return]
-      json_response 200, { data: reformat_soap_results(results) }
+      comments = reformat_soap_results(results)
+      comments = [comments] unless comments.kind_of? Array
+      json_response 200, { data: comments }
     end
 
     post '/places/:id/comments' do
       place_id = params[:id].to_i
-      comment = params[:comment]
-      response = settings.soap_client.call(:add_comment, message: {
+      comment_params = params[:comment]
+      comment = {
         id: random_id,
         idParent: place_id,
-        author: comment[:author],
-        mark: comment[:mark].to_i,
-        text: comment[:text]
-      })
-      conversions = { /^mark/ => lambda { |v| v.to_i } }
-      results = from_xml(response.body[:add_comment_response][:return], conversions)['comment']
-      json_response 201, { data: results }
+        author: comment_params[:author],
+        mark: comment_params[:mark].to_i,
+        text: comment_params[:text]
+      }
+      settings.soap_client.call(:add_comment, message: comment)
+      comment.reject! { |k| k == :idParent }
+      comment[:place_id] = place_id
+      json_response 201, { data: comment }
     end
 
 
