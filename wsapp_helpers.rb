@@ -51,9 +51,15 @@ module WSApp
     end
 
     def reformat_soap_results(soap_results)
-      soap_results[:item].map! do |arr1|
-        arr1[:item].map do |arr2|
-          { arr2[:key] => arr2[:value] }
+      if soap_results[:item].kind_of? Array
+        soap_results[:item].map! do |arr1|
+          arr1[:item].map do |arr2|
+            { arr2[:key] => arr2[:value] }
+          end.reduce Hash.new, :merge
+        end
+      else
+        soap_results[:item][:item].map! do |arr|
+          { arr[:key] => arr[:value] }
         end.reduce Hash.new, :merge
       end
     end

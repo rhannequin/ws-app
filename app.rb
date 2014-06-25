@@ -32,7 +32,7 @@ module WSApp
     configure do
       enable :logging
       enable :cross_origin
-      set :soap_client, Savon.client(wsdl: 'http://localhost/workspace/github/ws-soap-server/comments.wsdl')
+      set :soap_client, Savon.client(wsdl: 'http://localhost/workspace/github/ws-soap-server/SoapServer.php?wsdl')
       set :rest_server, 'http://localhost:3000'
     end
 
@@ -84,19 +84,32 @@ module WSApp
       json_response 200, { data: to_xml['places']['place'] }
     end
 
-    get '/places/:id/comments' do
-      place_id = params[:id].to_i
-      response = settings.soap_client.call(:get_comments_by_parent_id, message: { id: place_id })
-      results = response.body[:get_comments_by_parent_id_response][:return]
-      json_response 200, { data: { results: reformat_soap_results(results) } }
-    end
-
     post '/places' do
       url = "#{settings.rest_server}/places"
       response = RestClient.post url, to_xml(params[:place]), content_type: :xml, accept: :xml
       conversions = { /^placeId/ => lambda { |v| v.to_i } }
       from_xml = from_xml response.to_str, conversions
       json_response 201, { data: { place_id: from_xml['placeId'] } }
+    end
+
+    get '/places/:id/comments' do
+      place_id = params[:id].to_i
+      response = settings.soap_client.call(:get_comments_by_parent_id, message: { idParent: place_id })
+      results = response.body[:get_comments_by_parent_id_response][:return]
+      json_response 200, { data: { results: reformat_soap_results(results) } }
+    end
+
+    post '/places/:id/comments' do
+      place_id = params[:id].to_i
+      response = settings.soap_client.call(:add_comment, message: {
+        id: 'one',
+        idParent: 1,
+        author: 'rhannequin',
+        mark: 10,
+        text: 'wonderful'
+      })
+      results = response.body[:add_comment_response][:return]
+      json_response 201, { data: { results: results } }
     end
 
 
