@@ -58,6 +58,7 @@ module WSApp
           end.reduce Hash.new, :merge
         end
       else
+        return [] if soap_results[:item].nil?
         soap_results[:item][:item].map! do |arr|
           { arr[:key] => arr[:value] }
         end.reduce Hash.new, :merge
@@ -73,6 +74,10 @@ module WSApp
 
     def from_xml(str, conversions = {})
       XmlSimple.xml_in str, conversions: conversions, forcearray: false
+    end
+
+    def random_id
+      (0...8).map { (65 + rand(26)).chr }.join
     end
 
   end
