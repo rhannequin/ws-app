@@ -62,6 +62,7 @@ module WSApp
     get '/places' do
       url = "#{settings.rest_server}/places"
       url << "?f=#{params['f']}" unless params['f'].nil?
+      url << "?s=#{params['s']}&c=#{params['c']}" unless params['s'].nil? or params['c'].nil?
       response = RestClient.get url, { accept: :xml }
       conversions = {
         /^town_id|id/         => lambda { |v| v.to_i },
