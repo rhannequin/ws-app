@@ -71,6 +71,7 @@ module WSApp
       to_xml = XmlSimple.xml_in response.to_str, conversions: conversions, forcearray: false
       rendered = to_xml['places']['place']
       rendered = [rendered] unless rendered.kind_of? Array
+      rendered = [] if rendered.first.nil?
       json_response 200, { data: rendered }
     end
 
