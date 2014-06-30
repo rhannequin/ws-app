@@ -100,7 +100,7 @@ module WSApp
       results = response.body[:get_comments_by_parent_id_response][:return]
       comments = reformat_soap_results(results)
       comments = [comments] unless comments.kind_of? Array
-      json_response 200, { data: comments }
+      json_response 200, { data: comments.sort_by { |h| h['mark'] }.reverse }
     end
 
     post '/places/:id/comments' do
